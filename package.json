@@ -1,0 +1,19 @@
+{
+  "name": "fox-den-api",
+  "version": "1.0.0",
+  "description": "Una pequeña aplicación tipo API para un restaurante de comidas rápidas llamado Fox Den",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.20.0",
+    "sqlite3": "^5.1.7"
+  },
+  "author": "Johan Sebastian Rojas Laverde",
+  "license": "ISC"
+}

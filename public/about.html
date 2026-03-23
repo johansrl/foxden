@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosotros | Fox Den</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <nav class="navbar">
+    <div class="nav-logo">Fox Den <span class="highlight-alt">API</span></div>
+    <ul class="nav-links">
+        <li><a href="./index.html">SYS.Main</a></li>
+        <li><a href="./products.html">Catálogo</a></li>
+        <li><a href="./sales.html">Transacciones</a></li>
+        <li><a href="./clients.html">Gestión</a></li>
+        <li><a href="./register.html">Autenticar</a></li>
+    </ul>
+</nav>
+
+        <div class="glass-card page-content">
+            <header class="card-header">
+                <h1 class="title">Sobre <span class="highlight">Fox Den</span></h1>
+                <p class="subtitle">Más que comida rápida, una experiencia ágil y deliciosa.</p>
+            </header>
+
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2>Nuestra Historia</h2>
+                    <p>Fundado en la era digital, Fox Den nació de la necesidad de combinar la rapidez de la comida "fast-food" con una gestión eficiente potenciada por tecnología moderna y una arquitectura REST.</p>
+                    <p>Como zorros, somos ágiles, astutos y rápidos para procesar tus pedidos. Nuestro sistema API centralizado asegura que tu comida esté lista en tiempo récord, conectando inventario, ventas y clientes en tiempo real.</p>
+                    
+                    <h2 style="margin-top: 1.5rem;">Tecnología Principal</h2>
+                    <ul class="tech-list" style="margin-top: 1rem; list-style: none; color: var(--text-muted);">
+                        <li>🚀 Backend: <strong>Node.js & Express</strong></li>
+                        <li>💾 Base de Datos: <strong>SQLite3</strong></li>
+                        <li>🔐 Seguridad: <strong>JWT & Bcrypt</strong></li>
+                        <li>🎨 Frontend: <strong>HTML5 & CSS3 Premium</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="about-visuals">
+                    <div class="mockup-image">
+                       <span style="font-size: 5rem;">🦊🍔</span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="card-footer" style="margin-top: 2rem;">
+                <p>Desarrollado por Johan Sebastian Rojas Laverde - Curso PC101-AI</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.glow-orb');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            orbs[0].style.transform = `translate(${mouseX * 30}px, ${mouseY * 30}px)`;
+            orbs[1].style.transform = `translate(${mouseX * -40}px, ${mouseY * -40}px)`;
+            orbs[2].style.transform = `translate(${mouseX * 20}px, ${mouseY * -20}px)`;
+        });
+    </script>
+</body>
+</html>

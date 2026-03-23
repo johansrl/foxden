@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compras | Fox Den</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>">
+    <style>
+        .sales-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .sales-container { grid-template-columns: 1fr; }
+        }
+        .sales-history {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .sale-item {
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-orange);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <nav class="navbar">
+    <div class="nav-logo">Fox Den <span class="highlight-alt">API</span></div>
+    <ul class="nav-links">
+        <li><a href="./index.html">SYS.Main</a></li>
+        <li><a href="./products.html">Catálogo</a></li>
+        <li><a href="./sales.html">Transacciones</a></li>
+        <li><a href="./clients.html">Gestión</a></li>
+        <li><a href="./register.html">Autenticar</a></li>
+    </ul>
+</nav>
+
+        <div class="glass-card page-content">
+            <header class="card-header" style="margin-bottom: 1rem;">
+                <h1 class="title">Zona de <span class="highlight">Compras</span></h1>
+                <p class="subtitle" id="user-greeting">Necesitas iniciar sesión para comprar o ver el historial.</p>
+            </header>
+
+            <div class="sales-container">
+                <!-- Simulación de hacer compra -->
+                <div class="form-container" style="margin:0; max-width:100%;">
+                    <h3 style="margin-bottom: 1rem;">Registrar Venta / Pedido</h3>
+                    
+                    <form id="sale-form" class="custom-form">
+                        <div class="form-group">
+                            <label for="producto-id">ID del Producto</label>
+                            <input type="number" id="producto-id" required placeholder="Ej. 1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad-v">Cantidad</label>
+                            <input type="number" id="cantidad-v" required placeholder="Ej. 2" min="1">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="btn-buy" disabled>Realizar Compra</button>
+                    </form>
+                    <div id="sale-alert" class="alert hidden"></div>
+                </div>
+
+                <!-- Historial -->
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Historial de Ventas</h3>
+                    <div class="sales-history" id="sales-list">
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Cargando...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.glow-orb');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            orbs[0].style.transform = `translate(${mouseX * 30}px, ${mouseY * 30}px)`;
+            orbs[1].style.transform = `translate(${mouseX * -40}px, ${mouseY * -40}px)`;
+        });
+
+        const token = localStorage.getItem('fox-token');
+        const userStr = localStorage.getItem('fox-user');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (userStr && token) {
+                const user = JSON.parse(userStr);
+                document.getElementById('user-greeting').textContent = `Hola, ${user.nombre}. Autorizado como: ${user.rol}.`;
+                document.getElementById('btn-buy').disabled = false;
+                loadSales();
+            } else {
+                document.getElementById('user-greeting').innerHTML = '⚠️ <a href="./register.html" style="color:var(--accent-orange)">Inicia sesión aquí</a> para autorizar operaciones.';
+                document.getElementById('sales-list').innerHTML = '<p>No autorizado.</p>';
+            }
+        });
+
+        function showAlert(msg, type) {
+            const el = document.getElementById('sale-alert');
+            el.textContent = msg;
+            el.className = `alert ${type}`;
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        document.getElementById('sale-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const producto_id = document.getElementById('producto-id').value;
+            const cantidad = document.getElementById('cantidad-v').value;
+            
+            try {
+                const res = await fetch('/api/ventas', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ producto_id, cantidad })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert('✅ Compra registrada con éxito!', 'success');
+                    e.target.reset();
+                    loadSales();
+                } else {
+                    showAlert(`❌ Error: ${data.error}`, 'error');
+                }
+            } catch (err) {
+                showAlert('❌ Error de red', 'error');
+            }
+        });
+
+        async function loadSales() {
+            try {
+                const res = await fetch('/api/ventas', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                const list = document.getElementById('sales-list');
+                
+                if (res.ok) {
+                    if (data.length === 0) {
+                        list.innerHTML = '<p>No hay ventas registradas.</p>';
+                        return;
+                    }
+                    list.innerHTML = '';
+                    data.forEach(v => {
+                        list.innerHTML += `
+                            <div class="sale-item">
+                                <strong>Venta #${v.id}</strong><br>
+                                Usuario ID: ${v.usuario_id} | Producto ID: ${v.producto_id} <br>
+                                Cantidad: ${v.cantidad} | <strong>Total: $${parseFloat(v.total).toFixed(2)}</strong><br>
+                                <small style="color:var(--text-muted)">Fecha: ${v.fecha}</small>
+                            </div>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = `<p style="color:#ef4444">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('sales-list').innerHTML = '<p>Error al cargar historial.</p>';
+            }
+        }
+    </script>
+</body>
+</html>

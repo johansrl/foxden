@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fox Den API | Server Status</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        
+        <nav class="navbar">
+    <div class="nav-logo">Fox Den <span class="highlight-alt">API</span></div>
+    <ul class="nav-links">
+        <li><a href="./index.html">SYS.Main</a></li>
+        <li><a href="./products.html">Catálogo</a></li>
+        <li><a href="./sales.html">Transacciones</a></li>
+        <li><a href="./clients.html">Gestión</a></li>
+        <li><a href="./register.html">Autenticar</a></li>
+    </ul>
+</nav>
+
+        <div class="glass-card">
+            <header class="card-header">
+                <div class="status-indicator">
+                    <div class="pulse-dot"></div>
+                    <span>API Online</span>
+                </div>
+                <h1 class="title">Fox Den <span class="highlight">API</span></h1>
+                <p class="subtitle">Servidor REST de Comidas Rápidas</p>
+            </header>
+
+            <div class="content-section">
+                <div class="author-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <div class="author-info">
+                        <span class="label">Desarrollador</span>
+                        <span class="name">Johan Sebastian Rojas Laverde</span>
+                    </div>
+                </div>
+
+                <div class="course-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                    <div class="course-info">
+                        <span class="label">Curso</span>
+                        <span class="name">PC101-AI</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoints-grid">
+                <a href="./register.html" class="endpoint-card">
+                    <div class="endpoint-icon u-icon">👥</div>
+                    <h3>Usuarios</h3>
+                    <p>Gestión de clientes y staff</p>
+                </a>
+                <a href="./products.html" class="endpoint-card">
+                    <div class="endpoint-icon i-icon">📦</div>
+                    <h3>Inventario</h3>
+                    <p>Control de stock e insumos</p>
+                </a>
+                <a href="./sales.html" class="endpoint-card">
+                    <div class="endpoint-icon v-icon">🍔</div>
+                    <h3>Ventas</h3>
+                    <p>Registro de pedidos diarios</p>
+                </a>
+                <a href="./register.html" class="endpoint-card">
+                    <div class="endpoint-icon a-icon">🔐</div>
+                    <h3>Auth</h3>
+                    <p>Autenticación segura (JWT)</p>
+                </a>
+            </div>
+
+            <footer class="card-footer">
+                <p>NodeJS Express Server v1.0.0</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.glow-orb');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            orbs[0].style.transform = `translate(${mouseX * 30}px, ${mouseY * 30}px)`;
+            orbs[1].style.transform = `translate(${mouseX * -40}px, ${mouseY * -40}px)`;
+            orbs[2].style.transform = `translate(${mouseX * 20}px, ${mouseY * -20}px)`;
+        });
+    </script>
+</body>
+</html>

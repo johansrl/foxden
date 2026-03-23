@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth | Fox Den Cyber</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <nav class="navbar">
+            <div class="nav-logo">Fox Den <span class="highlight-alt">API</span></div>
+            <ul class="nav-links">
+                <li><a href="./index.html">SYS.Main</a></li>
+                <li><a href="./products.html">Catálogo</a></li>
+                <li><a href="./sales.html">Transacciones</a></li>
+                <li><a href="./clients.html">Gestión</a></li>
+                <li><a href="./register.html" class="active">Autenticar</a></li>
+            </ul>
+        </nav>
+
+        <div class="glass-card page-content auth-wrapper">
+            
+            <!-- Login Form -->
+            <div class="form-container" id="login-container">
+                <header class="card-header" style="margin-bottom: 1.5rem;">
+                    <h2 class="title" style="font-size: 2.5rem;">Iniciar <span class="highlight">Sesión</span></h2>
+                </header>
+
+                <form id="login-form" class="custom-form">
+                    <div class="form-group">
+                        <label for="login-email">ID Electrónico</label>
+                        <input type="email" id="login-email" required placeholder="tu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Clave de Acceso</label>
+                        <input type="password" id="login-password" required placeholder="********">
+                    </div>
+
+                    <div id="login-alert" class="alert hidden"></div>
+
+                    <button type="submit" class="btn btn-primary">AUTENTICAR</button>
+                    <p class="switch-form">¿No tienes credenciales? <a href="#" id="go-to-register">Registrar Nuevo Nodo</a></p>
+                </form>
+            </div>
+
+            <div class="form-container" id="register-container">
+                <header class="card-header" style="margin-bottom: 1.5rem;">
+                    <h2 class="title" style="font-size: 2.5rem;">Crear <span class="highlight">Nodo</span></h2>
+                </header>
+
+                <form id="register-form" class="custom-form">
+                    <div class="form-group">
+                        <label for="reg-nombre">Identificador (Nombre)</label>
+                        <input type="text" id="reg-nombre" required placeholder="Ej. Neo">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">ID Electrónico</label>
+                        <input type="email" id="reg-email" required placeholder="red@matrix.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Clave de Cifrado</label>
+                        <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-rol">Clase de Acceso</label>
+                        <select id="reg-rol" required>
+                            <option value="cliente">Cliente (Público)</option>
+                            <option value="personal">Personal (Empleado)</option>
+                            <option value="jefe">Administrador (Jefe)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group hidden" id="codigo-trabajador-group">
+                        <label for="reg-codigo">Autorización de Seguridad (Sólo Personal)</label>
+                        <input type="password" id="reg-codigo" placeholder="Ingrese el código de autorización">
+                    </div>
+
+                    <div id="register-alert" class="alert hidden"></div>
+
+                    <button type="submit" class="btn btn-secondary">INICIALIZAR</button>
+                    <p class="switch-form">¿Identidad verificada? <a href="#" id="go-to-login">Ir a la red principal</a></p>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JS Logic -->
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.glow-orb');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            orbs[0].style.transform = `translate(${mouseX * 30}px, ${mouseY * 30}px)`;
+            orbs[1].style.transform = `translate(${mouseX * -40}px, ${mouseY * -40}px)`;
+            orbs[2].style.transform = `translate(${mouseX * 20}px, ${mouseY * -20}px)`;
+        });
+
+        const loginContainer = document.getElementById('login-container');
+        const registerContainer = document.getElementById('register-container');
+        
+        document.getElementById('go-to-register').addEventListener('click', (e) => {
+            e.preventDefault();
+            loginContainer.classList.add('hidden');
+            registerContainer.classList.remove('hidden');
+            document.title = "Registro | Fox Den Cyber";
+        });
+
+        document.getElementById('go-to-login').addEventListener('click', (e) => {
+            e.preventDefault();
+            registerContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+            document.title = "Auth | Fox Den Cyber";
+        });
+
+        document.getElementById('reg-rol').addEventListener('change', (e) => {
+            const extraGroup = document.getElementById('codigo-trabajador-group');
+            if (e.target.value === 'personal' || e.target.value === 'jefe') {
+                extraGroup.classList.remove('hidden');
+            } else {
+                extraGroup.classList.add('hidden');
+            }
+        });
+
+        function showAlert(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `alert ${type}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        // LOGIN Logic
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const btn = e.target.querySelector('button');
+            
+            btn.textContent = 'PROCESANDO...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('login-alert', `✅ ${data.mensaje}. Conexión establecida: ${data.usuario.nombre}`, 'success');
+                    localStorage.setItem('fox-token', data.token);
+                    localStorage.setItem('fox-rol', data.usuario.rol);
+                    localStorage.setItem('fox-user', JSON.stringify(data.usuario));
+                } else {
+                    showAlert('login-alert', `❌ Error: ${data.error}`, 'error');
+                }
+            } catch (err) {
+                showAlert('login-alert', '❌ Desconexión de red', 'error');
+            } finally {
+                btn.textContent = 'AUTENTICAR';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                nombre: document.getElementById('reg-nombre').value,
+                email: document.getElementById('reg-email').value,
+                password: document.getElementById('reg-password').value,
+                rol: document.getElementById('reg-rol').value,
+                codigoSecreto: document.getElementById('reg-codigo').value || ''
+            };
+
+            const btn = e.target.querySelector('button');
+            btn.textContent = 'PROCESANDO...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('register-alert', `✅ Registro satisfactorio. ID asignado: ${data.usuarioId}`, 'success');
+                    e.target.reset(); 
+                    document.getElementById('codigo-trabajador-group').classList.add('hidden');
+                    setTimeout(() => document.getElementById('go-to-login').click(), 2500);
+                } else {
+                    showAlert('register-alert', `❌ Advertencia: ${data.error}`, 'error');
+                }
+            } catch (err) {
+                showAlert('register-alert', '❌ Desconexión de red', 'error');
+            } finally {
+                btn.textContent = 'INICIALIZAR';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

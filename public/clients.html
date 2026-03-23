@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes | Fox Den Cyber</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>">
+    <style>
+        .client-card {
+            background: rgba(10, 15, 25, 0.7);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-left: 4px solid var(--accent-purple);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .client-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        .client-info h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--accent-blue);
+            font-size: 1.4rem;
+        }
+        .client-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+        .client-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .history-list {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+            border: 1px solid rgba(57, 255, 20, 0.1);
+        }
+        .history-item {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 1fr;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            font-family: monospace;
+            color: var(--text-main);
+        }
+        .history-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .empty-history {
+            color: var(--accent-orange);
+            font-size: 0.85rem;
+        }
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-card {
+            background: var(--bg-dark);
+            border: 2px solid var(--accent-orange);
+            padding: 2.5rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.3);
+            position: relative;
+        }
+        .modal h2 {
+            font-family: 'Space Grotesk';
+            color: var(--accent-orange);
+            margin-bottom: 1.5rem;
+        }
+        .modal .btn-group {
+            display: flex; gap: 1rem; margin-top: 2rem;
+        }
+        .lock-icon {
+            color: var(--text-muted); padding: 5px; font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <nav class="navbar">
+            <div class="nav-logo">Fox Den <span class="highlight-alt">API</span></div>
+            <ul class="nav-links">
+                <li><a href="./index.html">SYS.Main</a></li>
+                <li><a href="./products.html">Catálogo</a></li>
+                <li><a href="./sales.html">Transacciones</a></li>
+                <li><a href="./clients.html" class="active">Gestión</a></li>
+            </ul>
+        </nav>
+
+        <div class="glass-card page-content">
+            <header class="card-header" style="margin-bottom: 2rem;">
+                <h1 class="title">Gestión de <span class="highlight">Usuarios</span></h1>
+                <p class="subtitle" id="user-role-display">Cargando credenciales administrativas...</p>
+            </header>
+
+            <div id="alert-box" class="alert hidden"></div>
+
+            <div id="content-area">
+                <div id="loading" style="text-align: center; color: var(--accent-blue); padding: 2rem;">
+                    Decriptando registros de usuarios...
+                </div>
+                <div id="clients-container" class="hidden">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Eliminación -->
+    <div id="delete-modal" class="modal hidden">
+        <div class="modal-card">
+            <h2>ADVERTENCIA CRÍTICA</h2>
+            <p style="color:var(--text-main); margin-bottom: 1rem;">
+                Estás a punto de purgar un registro de la base de datos.
+                Esta acción es irreversible. ¿Proceder?
+            </p>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="confirm-delete">CONFIRMAR PURGA</button>
+                <button class="btn btn-secondary" onclick="closeModal()">CANCELAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('fox-token');
+        const userStr = localStorage.getItem('fox-user');
+        let currentUser = null;
+        let clientToDelete = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!token || !userStr) {
+                document.getElementById('content-area').innerHTML = `
+                    <div style="text-align:center; padding: 2rem; color:var(--accent-orange);">
+                        <h2><span class="lock-icon">🔒</span> ACCESO DENEGADO</h2>
+                        <p>Requiere credenciales nivel [PERSONAL] o superior.</p>
+                        <a href="./register.html" class="btn btn-secondary" style="display:inline-block; margin-top:2rem;">Autenticar</a>
+                    </div>`;
+                document.getElementById('user-role-display').textContent = "Conexión Rechazada.";
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.rol === 'cliente') {
+                document.getElementById('content-area').innerHTML = `
+                    <div style="text-align:center; padding: 2rem; color:var(--accent-orange);">
+                        <h2><span class="lock-icon">🔒</span> NIVEL DE PERMISOS INSUFICIENTE</h2>
+                        <p>Rol detectado: [CLIENTE]. Esta área es exclusiva para administración.</p>
+                    </div>`;
+                document.getElementById('user-role-display').textContent = "Operación no autorizada para tu rol.";
+                return;
+            }
+
+            document.getElementById('user-role-display').textContent = `Conectado como ID: ${currentUser.id} - Rol: [${currentUser.rol.toUpperCase()}]`;
+            fetchClients();
+        });
+
+        function showAlert(msg, isError = false) {
+            const el = document.getElementById('alert-box');
+            el.textContent = msg;
+            el.className = `alert ${isError ? 'error' : 'success'}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        async function fetchClients() {
+            try {
+                const res = await fetch('/api/usuarios/clientes', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Error desconocido al cargar clientes.');
+                }
+                
+                renderClients(data);
+            } catch (error) {
+                showAlert(error.message, true);
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        async function renderClients(clients) {
+            const container = document.getElementById('clients-container');
+            document.getElementById('loading').classList.add('hidden');
+            container.classList.remove('hidden');
+
+            if (clients.length === 0) {
+                container.innerHTML = '<p style="color:var(--accent-yellow)">No se encontraron registros de clientes.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            for (let c of clients) {
+                // Fetch compras for each client
+                let historyHtml = '<p class="empty-history">Cargando transacciones...</p>';
+                
+                const card = document.createElement('div');
+                card.className = 'client-card';
+                card.innerHTML = `
+                    <div class="client-header">
+                        <div class="client-info">
+                            <h3>${c.nombre} <span style="font-size: 0.8rem; color:var(--accent-orange)">#${c.id}</span></h3>
+                            <p>${c.email}</p>
+                            <p>Registro: ${new Date(c.creado_en).toLocaleDateString()}</p>
+                        </div>
+                        <div class="client-actions">
+                            <!-- Los botones solo se añaden si es jefe -->
+                            ${currentUser.rol === 'jefe' ? `
+                                <button class="action-btn btn-edit" onclick="alert('Funcionalidad de Edición pendiente por UI extendida')">EDITAR</button>
+                                <button class="action-btn btn-delete" onclick="openDeleteModal(${c.id})">PURGAR</button>
+                            ` : `<span style="font-size:0.8rem; color:var(--text-muted)">Modo Observador</span>`}
+                        </div>
+                    </div>
+                    <strong>Historial de Operaciones:</strong>
+                    <div class="history-list" id="hist-${c.id}">
+                        ${historyHtml}
+                    </div>
+                `;
+                container.appendChild(card);
+                
+                // Fetch history asynchronously
+                fetch(`/api/usuarios/clientes/${c.id}/ventas`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => res.json())
+                .then(ventas => {
+                    const el = document.getElementById(`hist-${c.id}`);
+                    if(!ventas || ventas.length === 0) {
+                        el.innerHTML = '<span class="empty-history">Sin operaciones registradas.</span>';
+                        return;
+                    }
+                    let lines = '';
+                    ventas.forEach(v => {
+                        const prod = v.producto_nombre || 'Producto Retirado';
+                        lines += `<div class="history-item">
+                            <span>Venta ID: ${v.id}</span>
+                            <span style="color:var(--accent-blue)">${prod}</span>
+                            <span>Cant: ${v.cantidad}</span>
+                            <span style="color:var(--success-green); text-align:right;">¤${v.total}</span>
+                        </div>`;
+                    });
+                    el.innerHTML = lines;
+                })
+                .catch(() => {
+                    document.getElementById(`hist-${c.id}`).innerHTML = '<span class="empty-history">Error cifrado en transacciones.</span>';
+                });
+            }
+        }
+
+        function openDeleteModal(id) {
+            clientToDelete = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            clientToDelete = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        document.getElementById('confirm-delete').addEventListener('click', async () => {
+            if (!clientToDelete) return;
+            
+            try {
+                const res = await fetch(`/api/usuarios/${clientToDelete}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert('Usuario purgado del sistema.', false);
+                    fetchClients(); // recargar
+                } else {
+                    showAlert('Error: ' + data.error, true);
+                }
+            } catch (err) {
+                showAlert('Error de red al intentar purgar.', true);
+            }
+            closeModal();
+        });
+    </script>
+</body>
+</html>
